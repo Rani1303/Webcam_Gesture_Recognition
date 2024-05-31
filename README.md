@@ -130,13 +130,8 @@ https://vimeo.com/952325330
 ```
 Lower_thereshold= 0
 Upper_threshold= 83
-
 ```
  - The concept of templating engine is being used to render server side pages . This project is working on localhost but on deployed version it isn't as the server is running on dedicated docker containers using their own internal network configurations which disables the javascript code to properly fetch the client side browser apis.
-
-=======
-https://vimeo.com/952325330
->>>>>>> 3b0981667d72674d98ae52ed820e3c596c5460c0
 
 ## Conclusion
 
