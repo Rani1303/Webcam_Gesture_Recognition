@@ -6,7 +6,7 @@ from keras.models import load_model
 from spellchecker import SpellChecker
 import threading
 
-app = Flask(__name__, template_folder='templates')
+app = Flask(_name_, template_folder='templates')
 
 # Load the pre-trained model and spell checker
 model = load_model('model.h5')
@@ -146,20 +146,11 @@ def stop():
     shutdown_server()
     return jsonify(status="success")
 
-@app.route('/allow_camera', methods=['POST'])
-def allow_camera():
-    # Here you can add logic to handle the camera permission request
-    # For example, you can check if the request contains a valid token or user authentication
-    # Once the permission is granted, you can return a response indicating success
-    
-    # For simplicity, let's assume the permission is always granted
-    return jsonify(status="success", message="Camera permission granted")
-
 def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')
     if func is None:
         raise RuntimeError('Not running with the Werkzeug Server')
     func()
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     app.run(host='0.0.0.0', port=5000, debug=True)
