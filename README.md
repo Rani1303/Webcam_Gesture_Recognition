@@ -50,7 +50,7 @@ Follow these steps to set up and run the project on your local machine:
 
 ### Prerequisites
 
-- Python 3.6 or higher
+- Python 3.9 or higher
 - pip (Python package installer)
 
 ### Installation
@@ -119,6 +119,18 @@ The model makes a prediction, and the predicted label is displayed on the video 
 
 ## Demo
 
+## Note:
+
+ - Once started adjust the threshold values for edge detection so you can see just the edges of your palm and fingers.
+
+ Desired threshold values:
+
+```
+Lower_thereshold= 0
+Upper_threshold= 83
+
+```
+ - The concept of templating engine is being used to render server side pages . This project is working on localhost but on deployed version it isn't as the server is running on dedicated docker containers using their own internal network configurations which disables the javascript code to properly fetch the client side browser apis.
 
 
 ## Conclusion
