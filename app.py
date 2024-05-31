@@ -8,6 +8,7 @@ import threading
 
 app = Flask(__name__, template_folder='templates')
 
+# Load the pre-trained model and spell checker
 model = load_model('model.h5')
 spell = SpellChecker()
 
@@ -16,12 +17,13 @@ alphabet['del'] = 27
 alphabet['nothing'] = 28
 alphabet['space'] = 29
 
+# Thresholds for edge detection
 lower_threshold = 100
 upper_threshold = 0
 
 IMG_SIZE = 100
 THRESHOLD = 0.85
-N_FRAMES = 50
+N_FRAMES = 70
 SENTENCE = ''
 LETTERS = np.array([], dtype='object')
 START = False
@@ -35,7 +37,7 @@ def get_class_label(val, dictionary):
 
 def generate_frames():
     global START, SENTENCE, LETTERS, lower_threshold, upper_threshold, camera_active
-    video_capture = cv2.VideoCapture(0)
+    video_capture = cv2.VideoCapture(0)  # Ensure this index is correct for your camera
     video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
     video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
@@ -144,5 +146,5 @@ def shutdown_server():
         raise RuntimeError('Not running with the Werkzeug Server')
     func()
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000,debug=True)
