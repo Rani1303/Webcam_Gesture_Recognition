@@ -60,8 +60,8 @@
                 $.post('/start_camera', function(response) {
                     if (response.status === "success") {
                         console.log('Camera started');
-                        $('#video-feed').show(); // Display the video feed
-                        $('#video-feed').attr('src', '/video_feed'); // Refresh video source
+                        $('#video-feed').show();
+                        $('#video-feed').attr('src', '/video_feed');
                         $('#start-camera').prop('disabled', true);
                         $('#stop-camera').prop('disabled', false);
                     } else {
@@ -76,8 +76,8 @@
                 $.post('/stop_camera', function(response) {
                     if (response.status === "success") {
                         console.log('Camera stopped');
-                        $('#video-feed').hide(); // Hide the video feed
-                        $('#video-feed').attr('src', ''); // Clear video source to ensure reinitialization
+                        $('#video-feed').hide();
+                        $('#video-feed').attr('src', ''); 
                         $('#start-camera').prop('disabled', false);
                         $('#stop-camera').prop('disabled', true);
                     } else {

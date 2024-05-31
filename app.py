@@ -146,6 +146,15 @@ def stop():
     shutdown_server()
     return jsonify(status="success")
 
+@app.route('/allow_camera', methods=['POST'])
+def allow_camera():
+    # Here you can add logic to handle the camera permission request
+    # For example, you can check if the request contains a valid token or user authentication
+    # Once the permission is granted, you can return a response indicating success
+    
+    # For simplicity, let's assume the permission is always granted
+    return jsonify(status="success", message="Camera permission granted")
+
 def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')
     if func is None:
