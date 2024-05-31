@@ -6,7 +6,7 @@ from keras.models import load_model
 from spellchecker import SpellChecker
 import threading
 
-app = Flask(_name_, template_folder='templates')
+app = Flask(__name__, template_folder='templates')
 
 # Load the pre-trained model and spell checker
 model = load_model('model.h5')
@@ -152,5 +152,5 @@ def shutdown_server():
         raise RuntimeError('Not running with the Werkzeug Server')
     func()
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
