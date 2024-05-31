@@ -28,7 +28,8 @@ SENTENCE = ''
 LETTERS = np.array([], dtype='object')
 START = False
 
-camera_active = True
+camera_active = False
+video_capture = None
 
 def get_class_label(val, dictionary):
     for key, value in dictionary.items():
@@ -36,12 +37,11 @@ def get_class_label(val, dictionary):
             return key
 
 def generate_frames():
-    global START, SENTENCE, LETTERS, lower_threshold, upper_threshold, camera_active
-    video_capture = cv2.VideoCapture(0)  # Ensure this index is correct for your camera
-    video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
-    video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-
+    global START, SENTENCE, LETTERS, lower_threshold, upper_threshold, camera_active, video_capture
     while camera_active:
+        if video_capture is None:
+            continue
+        
         ret, frame = video_capture.read()
         if not ret:
             break
@@ -103,7 +103,9 @@ def generate_frames():
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-    video_capture.release()
+    if video_capture is not None:
+        video_capture.release()
+        video_capture = None
 
 @app.route('/')
 def index():
@@ -113,18 +115,6 @@ def index():
 def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route('/start_stop', methods=['POST'])
-def start_stop():
-    global START
-    START = not START
-    return jsonify(status="success", START=START)
-
-@app.route('/erase_output', methods=['POST'])
-def erase_output():
-    global SENTENCE
-    SENTENCE = ''
-    return jsonify(status="success")
-
 @app.route('/set_threshold', methods=['POST'])
 def set_threshold():
     global lower_threshold, upper_threshold
@@ -132,6 +122,22 @@ def set_threshold():
     lower_threshold = int(data.get('lower', lower_threshold))
     upper_threshold = int(data.get('upper', upper_threshold))
     return jsonify(status="success", lower_threshold=lower_threshold, upper_threshold=upper_threshold)
+
+@app.route('/start_camera', methods=['POST'])
+def start_camera():
+    global camera_active, video_capture
+    if not camera_active:
+        camera_active = True
+        video_capture = cv2.VideoCapture(0)
+        video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
+        video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    return jsonify(status="success")
+
+@app.route('/stop_camera', methods=['POST'])
+def stop_camera():
+    global camera_active
+    camera_active = False
+    return jsonify(status="success")
 
 @app.route('/stop', methods=['POST'])
 def stop():
@@ -147,4 +153,4 @@ def shutdown_server():
     func()
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000,debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

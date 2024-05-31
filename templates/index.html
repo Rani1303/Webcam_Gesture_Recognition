@@ -5,76 +5,89 @@
     <title>Sign Language Recognition</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        .container {
+        body {
             display: flex;
-            align-items: flex-start;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
         }
-        .sliders {
-            margin-left: 20px;
+        h1 {
+            margin-bottom: 20px;
+        }
+        #controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        #video-feed {
+            width: 480px;
+            height: 360px;
+            margin-bottom: 20px;
+        }
+        input[type="range"] {
+            width: 200px;
+            margin-bottom: 5px;
         }
     </style>
 </head>
 <body>
-    <h1>Real-Time Sign Language Recognition</h1>
-    <div class="container">
-        <img src="{{ url_for('video_feed') }}" width="640" height="480">
-        <div class="sliders">
-            <button id="start_stop">Start/Pause</button>
-            <button id="erase_output">Erase Output</button>
-            <button id="stop">Stop</button>
-            <p>Lower Threshold: <span id="lower_value">100</span></p>
-            <input type="range" id="lower_threshold" min="0" max="255" value="100">
-            <p>Upper Threshold: <span id="upper_value">0</span></p>
-            <input type="range" id="upper_threshold" min="0" max="255" value="0">
+    <h1>Sign Language Recognition</h1>
+    <div id="controls">
+        <button id="start-camera">Start Camera</button>
+        <button id="stop-camera">Stop Camera</button>
+        <div>
+            <label for="lower-threshold">Lower Threshold: </label>
+            <input type="range" id="lower-threshold" name="lower-threshold" min="0" max="255" value="100">
+            <span id="lower-threshold-value">100</span>
+        </div>
+        <div>
+            <label for="upper-threshold">Upper Threshold: </label>
+            <input type="range" id="upper-threshold" name="upper-threshold" min="0" max="255" value="0">
+            <span id="upper-threshold-value">0</span>
         </div>
     </div>
-
+    <img id="video-feed" src="/video_feed" alt="Video Feed">
     <script>
-        $(document).ready(function(){
-            $('#start_stop').click(function(){
-                $.post('/start_stop', function(data){
-                    alert('Recognition ' + (data.START ? 'started' : 'paused'));
-                });
-            });
-
-            $('#erase_output').click(function(){
-                $.post('/erase_output', function(data){
-                    alert('Output erased');
-                });
-            });
-
-            $('#stop').click(function(){
-                $.post('/stop', function(data){
-                    alert('Camera stopped and server shutting down');
-                    window.location.href = "/";
-                });
-            });
-
-            $('#lower_threshold').on('input', function(){
-                let lower = $(this).val();
-                $('#lower_value').text(lower);
-                updateThresholds();
-            });
-
-            $('#upper_threshold').on('input', function(){
-                let upper = $(this).val();
-                $('#upper_value').text(upper);
-                updateThresholds();
-            });
-
-            function updateThresholds() {
-                let lower = $('#lower_threshold').val();
-                let upper = $('#upper_threshold').val();
-                $.ajax({
-                    url: '/set_threshold',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({ lower: lower, upper: upper }),
-                    success: function(data) {
-                        console.log('Thresholds updated', data);
+        $(document).ready(function() {
+            $('#start-camera').click(function() {
+                $.post('/start_camera', function(response) {
+                    if (response.status === "success") {
+                        console.log('Camera started');
+                    } else {
+                        console.log('Failed to start camera');
                     }
                 });
-            }
+            });
+
+            $('#stop-camera').click(function() {
+                $.post('/stop_camera', function(response) {
+                    if (response.status === "success") {
+                        console.log('Camera stopped');
+                    } else {
+                        console.log('Failed to stop camera');
+                    }
+                });
+            });
+
+            $('#lower-threshold').on('input', function() {
+                let value = $(this).val();
+                $('#lower-threshold-value').text(value);
+                $.post('/set_threshold', JSON.stringify({ lower: value }), function(data) {
+                    console.log('Lower threshold set to ' + data.lower_threshold);
+                }, 'json');
+            });
+
+            $('#upper-threshold').on('input', function() {
+                let value = $(this).val();
+                $('#upper-threshold-value').text(value);
+                $.post('/set_threshold', JSON.stringify({ upper: value }), function(data) {
+                    console.log('Upper threshold set to ' + data.upper_threshold);
+                }, 'json');
+            });
         });
     </script>
 </body>
