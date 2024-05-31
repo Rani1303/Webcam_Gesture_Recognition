@@ -27,6 +27,7 @@
             width: 480px;
             height: 360px;
             margin-bottom: 20px;
+            display: none; /* Initially hide the video feed */
         }
         input[type="range"] {
             width: 200px;
@@ -38,7 +39,7 @@
     <h1>Sign Language Recognition</h1>
     <div id="controls">
         <button id="start-camera">Start Camera</button>
-        <button id="stop-camera">Stop Camera</button>
+        <button id="stop-camera" disabled>Stop Camera</button>
         <div>
             <label for="lower-threshold">Lower Threshold: </label>
             <input type="range" id="lower-threshold" name="lower-threshold" min="0" max="255" value="100">
@@ -50,16 +51,24 @@
             <span id="upper-threshold-value">0</span>
         </div>
     </div>
-    <img id="video-feed" src="/video_feed" alt="Video Feed">
+    <img id="video-feed" src="" alt="Video Feed">
     <script>
         $(document).ready(function() {
+            checkCameraAccess();
+
             $('#start-camera').click(function() {
                 $.post('/start_camera', function(response) {
                     if (response.status === "success") {
                         console.log('Camera started');
+                        $('#video-feed').show(); // Display the video feed
+                        $('#video-feed').attr('src', '/video_feed'); // Refresh video source
+                        $('#start-camera').prop('disabled', true);
+                        $('#stop-camera').prop('disabled', false);
                     } else {
                         console.log('Failed to start camera');
                     }
+                }).fail(function() {
+                    console.log('Error starting camera');
                 });
             });
 
@@ -67,11 +76,25 @@
                 $.post('/stop_camera', function(response) {
                     if (response.status === "success") {
                         console.log('Camera stopped');
+                        $('#video-feed').hide(); // Hide the video feed
+                        $('#video-feed').attr('src', ''); // Clear video source to ensure reinitialization
+                        $('#start-camera').prop('disabled', false);
+                        $('#stop-camera').prop('disabled', true);
                     } else {
                         console.log('Failed to stop camera');
                     }
+                }).fail(function() {
+                    console.log('Error stopping camera');
                 });
             });
+
+            function checkCameraAccess() {
+                navigator.permissions.query({ name: 'camera' }).then(function(permissionStatus) {
+                    if (permissionStatus.state === 'denied') {
+                        alert('Camera access is denied. Please enable camera permissions in your browser settings.');
+                    }
+                });
+            }
 
             $('#lower-threshold').on('input', function() {
                 let value = $(this).val();
