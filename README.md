@@ -119,7 +119,8 @@ The model makes a prediction, and the predicted label is displayed on the video 
 
 ## Demo
 
-<<<<<<< HEAD
+https://vimeo.com/952325330
+
 ## Note:
 
  - Once started adjust the threshold values for edge detection so you can see just the edges of your palm and fingers.
