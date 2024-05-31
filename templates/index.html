@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Language Recognition</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .container {
+            display: flex;
+            align-items: flex-start;
+        }
+        .sliders {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Real-Time Sign Language Recognition</h1>
+    <div class="container">
+        <img src="{{ url_for('video_feed') }}" width="640" height="480">
+        <div class="sliders">
+            <button id="start_stop">Start/Pause</button>
+            <button id="erase_output">Erase Output</button>
+            <button id="stop">Stop</button>
+            <p>Lower Threshold: <span id="lower_value">100</span></p>
+            <input type="range" id="lower_threshold" min="0" max="255" value="100">
+            <p>Upper Threshold: <span id="upper_value">0</span></p>
+            <input type="range" id="upper_threshold" min="0" max="255" value="0">
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $('#start_stop').click(function(){
+                $.post('/start_stop', function(data){
+                    alert('Recognition ' + (data.START ? 'started' : 'paused'));
+                });
+            });
+
+            $('#erase_output').click(function(){
+                $.post('/erase_output', function(data){
+                    alert('Output erased');
+                });
+            });
+
+            $('#stop').click(function(){
+                $.post('/stop', function(data){
+                    alert('Camera stopped and server shutting down');
+                    window.location.href = "/";
+                });
+            });
+
+            $('#lower_threshold').on('input', function(){
+                let lower = $(this).val();
+                $('#lower_value').text(lower);
+                updateThresholds();
+            });
+
+            $('#upper_threshold').on('input', function(){
+                let upper = $(this).val();
+                $('#upper_value').text(upper);
+                updateThresholds();
+            });
+
+            function updateThresholds() {
+                let lower = $('#lower_threshold').val();
+                let upper = $('#upper_threshold').val();
+                $.ajax({
+                    url: '/set_threshold',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ lower: lower, upper: upper }),
+                    success: function(data) {
+                        console.log('Thresholds updated', data);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
