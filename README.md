@@ -119,7 +119,7 @@ The model makes a prediction, and the predicted label is displayed on the video 
 
 ## Demo
 
-https://vimeo.com/952325330
+[![Watch the video](https://github.com/Rani1303/Webcam_Gesture_Recognition/assets/103280525/63b31751-8ca6-4863-9a8b-fee130853ac9)](https://vimeo.com/952325330)
 
 ## Note:
 
